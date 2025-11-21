@@ -1,3 +1,19 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int totalPaises = 0;
+// Tamanho padrao de string sera definido aqui
+int tamStringPadrao = 15;
+
+struct paises{
+    char nome[tamStringPadrao];
+    char cor[tamStringPadrao];
+    int soldados;
+};
+
+
+
 // ============================================================================
 //         PROJETO WAR ESTRUTURADO - DESAFIO DE CÓDIGO
 // ============================================================================
@@ -29,9 +45,61 @@
 // Funções de lógica principal do jogo:
 // Função utilitária:
 
+void limpar(){
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF); // limpa buffer
+}
+
+void sistema(){
+    
+    int opcaosistema;
+    printf("Digite do sistema:");
+    scanf("%d", &opcaosistema);
+    limpar();
+
+    switch (opcaosistema){
+        struct paises terra[5];
+        
+        case 1:
+            printf("Voce escolheu a opcao 1 - Adicionar paises");
+
+            printf("Digite o nome do pais que deseja:");
+            fgets(terra[totalPaises].nome, tamStringPadrao, stdin);
+
+            printf("Digite a cor do pais:");
+            fgets(terra[totalPaises].cor, tamStringPadrao, stdin);
+
+            printf("Digite o numero de soldados do pais:");
+            scanf("%d", &terra[totalPaises].soldados);
+            limpar();
+
+            //Acrescentar o livro no total de livro
+            totalPaises++;
+            printf("teste - pais: %s, cor: %s, soldados: %d.", &terra[totalPaises].nome, &terra[totalPaises].cor, &terra[totalPaises].soldados);
+            break;
+        
+        case 2:
+            //status dos paises
+            printf("-------------------------------------------");
+            printf("Pais numero: %d\n", totalPaises);
+            printf("Pais: %s\n", terra[totalPaises].nome);
+            printf("Cor: %s\n", terra[totalPaises].cor);
+            printf("Total de soldados: %d\n", terra[totalPaises].soldados);
+
+        default:
+            printf("BO");
+            break;
+    }
+
+
+}
+
 // --- Função Principal (main) ---
 // Função principal que orquestra o fluxo do jogo, chamando as outras funções em ordem.
 int main() {
+
+    sistema();
+
     // 1. Configuração Inicial (Setup):
     // - Define o locale para português.
     // - Inicializa a semente para geração de números aleatórios com base no tempo atual.
