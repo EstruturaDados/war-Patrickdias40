@@ -2,9 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-int totalPaises = 0;
 // Tamanho padrao de string sera definido aqui
-int tamStringPadrao = 15;
+#define tamStringPadrao 15
+int totalPaises = 0;
+int opcaoSistema;
 
 struct paises{
     char nome[tamStringPadrao];
@@ -12,23 +13,96 @@ struct paises{
     int soldados;
 };
 
+// limparBufferEntrada():
+// Função utilitária para limpar o buffer de entrada do teclado (stdin), evitando problemas com leituras consecutivas de scanf e getchar.
+void limpar(){
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF); // limpa buffer
+}
+
+struct paises terra[10];
+
+void sistema(int opcaoSistema) {
+
+    switch (opcaoSistema) {
+
+        case 1:
+            if (totalPaises >= 10) {
+                printf("Limite de países atingido!\n");
+                break;
+            }
+
+            //pergunta quantos quer cadastrar
+
+            // if para verificar se vai passar do limite
+            //que é o cadastrados + seraocadastrados tem que ser menor do que limite
+
+            //caso for menor vai para o for 
+
+            //caso for maior, ira passar o limite e break
+
+            printf("\n-----------------------\n");
+            printf("ADICIONANDO UM PAIS\n");
+
+            printf("Digite o nome do país: ");
+            fgets(terra[totalPaises].nome, tamStringPadrao, stdin);
+
+            printf("Digite a cor do país: ");
+            fgets(terra[totalPaises].cor, tamStringPadrao, stdin);
+
+            printf("Digite o número de soldados: ");
+            scanf("%d", &terra[totalPaises].soldados);
+            limpar();
+
+            printf("País cadastrado!\n");
+            totalPaises++;
+            break;
+
+        case 2:
+            if (totalPaises == 0) {
+                printf("\n-----------------------\n");
+                printf("Nenhum país cadastrado!");
+                printf("\n-----------------------\n");
+                break;
+            }
+
+            printf("\n---- PAÍSES ---\n");
+            for (int i = 0; i < totalPaises; i++) {
+                printf("País %d:\n", i + 1);
+                printf("Nome: %s", terra[i].nome);
+                printf("Cor: %s", terra[i].cor);
+                printf("Soldados: %d\n", terra[i].soldados);
+                printf("-------------------------\n");
+            }
+            break;
 
 
-// ============================================================================
-//         PROJETO WAR ESTRUTURADO - DESAFIO DE CÓDIGO
-// ============================================================================
-//        
-// ============================================================================
-//
-// OBJETIVOS:
-// - Modularizar completamente o código em funções especializadas.
-// - Implementar um sistema de missões para um jogador.
-// - Criar uma função para verificar se a missão foi cumprida.
-// - Utilizar passagem por referência (ponteiros) para modificar dados e
-//   passagem por valor/referência constante (const) para apenas ler.
-// - Foco em: Design de software, modularização, const correctness, lógica de jogo.
-//
-// ============================================================================
+        default:
+            printf("Opção inválida.\n");
+            printf("Fechando programa!!");
+            break;
+    }
+}
+
+// --- Função Principal (main) ---
+// Função principal que orquestra o fluxo do jogo, chamando as outras funções em ordem.
+int main() {
+    do {
+        printf("\n=== MENU ===\n");
+        printf("Programa Rodando!\n");
+        printf("1 para cadastrar:\n");
+        printf("2 para visualizar:\n");
+        printf("3 para enserar programa:\n");
+
+        printf("\nEscolha:");
+        scanf("%d", &opcaoSistema);
+        limpar();
+
+        sistema(opcaoSistema);
+    } while (opcaoSistema != 3);
+
+    return 0;
+}
 
 // Inclusão das bibliotecas padrão necessárias para entrada/saída, alocação de memória, manipulação de strings e tempo.
 
@@ -45,82 +119,39 @@ struct paises{
 // Funções de lógica principal do jogo:
 // Função utilitária:
 
-void limpar(){
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF); // limpa buffer
-}
+// 1. Configuração Inicial (Setup):
+// - Define o locale para português.
+// - Inicializa a semente para geração de números aleatórios com base no tempo atual.
+// - Aloca a memória para o mapa do mundo e verifica se a alocação foi bem-sucedida.
+// - Preenche os territórios com seus dados iniciais (tropas, donos, etc.).
+// - Define a cor do jogador e sorteia sua missão secreta.
 
-void sistema(){
-    
-    int opcaosistema;
-    printf("Digite do sistema:");
-    scanf("%d", &opcaosistema);
-    limpar();
+// 2. Laço Principal do Jogo (Game Loop):
+// - Roda em um loop 'do-while' que continua até o jogador sair (opção 0) ou vencer.
+// - A cada iteração, exibe o mapa, a missão e o menu de ações.
+// - Lê a escolha do jogador e usa um 'switch' para chamar a função apropriada:
+//   - Opção 1: Inicia a fase de ataque.
+//   - Opção 2: Verifica se a condição de vitória foi alcançada e informa o jogador.
+//   - Opção 0: Encerra o jogo.
+// - Pausa a execução para que o jogador possa ler os resultados antes da próxima rodada.
 
-    switch (opcaosistema){
-        struct paises terra[5];
-        
-        case 1:
-            printf("Voce escolheu a opcao 1 - Adicionar paises");
+// 3. Limpeza:
+// - Ao final do jogo, libera a memória alocada para o mapa para evitar vazamentos de memória.
 
-            printf("Digite o nome do pais que deseja:");
-            fgets(terra[totalPaises].nome, tamStringPadrao, stdin);
-
-            printf("Digite a cor do pais:");
-            fgets(terra[totalPaises].cor, tamStringPadrao, stdin);
-
-            printf("Digite o numero de soldados do pais:");
-            scanf("%d", &terra[totalPaises].soldados);
-            limpar();
-
-            //Acrescentar o livro no total de livro
-            totalPaises++;
-            printf("teste - pais: %s, cor: %s, soldados: %d.", &terra[totalPaises].nome, &terra[totalPaises].cor, &terra[totalPaises].soldados);
-            break;
-        
-        case 2:
-            //status dos paises
-            printf("-------------------------------------------");
-            printf("Pais numero: %d\n", totalPaises);
-            printf("Pais: %s\n", terra[totalPaises].nome);
-            printf("Cor: %s\n", terra[totalPaises].cor);
-            printf("Total de soldados: %d\n", terra[totalPaises].soldados);
-
-        default:
-            printf("BO");
-            break;
-    }
-
-
-}
-
-// --- Função Principal (main) ---
-// Função principal que orquestra o fluxo do jogo, chamando as outras funções em ordem.
-int main() {
-
-    sistema();
-
-    // 1. Configuração Inicial (Setup):
-    // - Define o locale para português.
-    // - Inicializa a semente para geração de números aleatórios com base no tempo atual.
-    // - Aloca a memória para o mapa do mundo e verifica se a alocação foi bem-sucedida.
-    // - Preenche os territórios com seus dados iniciais (tropas, donos, etc.).
-    // - Define a cor do jogador e sorteia sua missão secreta.
-
-    // 2. Laço Principal do Jogo (Game Loop):
-    // - Roda em um loop 'do-while' que continua até o jogador sair (opção 0) ou vencer.
-    // - A cada iteração, exibe o mapa, a missão e o menu de ações.
-    // - Lê a escolha do jogador e usa um 'switch' para chamar a função apropriada:
-    //   - Opção 1: Inicia a fase de ataque.
-    //   - Opção 2: Verifica se a condição de vitória foi alcançada e informa o jogador.
-    //   - Opção 0: Encerra o jogo.
-    // - Pausa a execução para que o jogador possa ler os resultados antes da próxima rodada.
-
-    // 3. Limpeza:
-    // - Ao final do jogo, libera a memória alocada para o mapa para evitar vazamentos de memória.
-
-    return 0;
-}
+//         PROJETO WAR ESTRUTURADO - DESAFIO DE CÓDIGO
+// ============================================================================
+//        
+// ============================================================================
+//
+// OBJETIVOS:
+// - Modularizar completamente o código em funções especializadas.
+// - Implementar um sistema de missões para um jogador.
+// - Criar uma função para verificar se a missão foi cumprida.
+// - Utilizar passagem por referência (ponteiros) para modificar dados e
+//   passagem por valor/referência constante (const) para apenas ler.
+// - Foco em: Design de software, modularização, const correctness, lógica de jogo.
+//
+// ==========
 
 // --- Implementação das Funções ---
 
@@ -161,6 +192,3 @@ int main() {
 // Verifica se o jogador cumpriu os requisitos de sua missão atual.
 // Implementa a lógica para cada tipo de missão (destruir um exército ou conquistar um número de territórios).
 // Retorna 1 (verdadeiro) se a missão foi cumprida, e 0 (falso) caso contrário.
-
-// limparBufferEntrada():
-// Função utilitária para limpar o buffer de entrada do teclado (stdin), evitando problemas com leituras consecutivas de scanf e getchar.
