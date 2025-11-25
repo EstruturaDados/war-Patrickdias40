@@ -1,17 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 // Tamanho padrao de string sera definido aqui
-#define tamStringPadrao 15
+#define tamStringPadrao 20
 int totalPaises = 0;
 int opcaoSistema;
 
 struct paises{
-    char nome[tamStringPadrao];
-    char cor[tamStringPadrao];
+    char *nome;
+    char *cor;
     int soldados;
 };
+
+
+struct paises *terra;
 
 // limparBufferEntrada():
 // Função utilitária para limpar o buffer de entrada do teclado (stdin), evitando problemas com leituras consecutivas de scanf e getchar.
@@ -20,65 +24,130 @@ void limpar(){
     while ((c = getchar()) != '\n' && c != EOF); // limpa buffer
 }
 
-struct paises terra[10];
+void removeEnter(char *str) {
+    str[strcspn(str, "\n")] = '\0';
+}
+
+void cadastrar() {
+    if (totalPaises >= 10) {
+        printf("Limite de países atingido!\n");
+    } else {
+        //pergunta quantos quer cadastrar
+
+        // if para verificar se vai passar do limite
+        //que é o cadastrados + seraocadastrados tem que ser menor do que limite
+
+        //caso for menor vai para o for 
+
+        //caso for maior, ira passar o limite e break
+
+        printf("\n-----------------------\n");
+        printf("ADICIONANDO UM PAIS\n");
+
+        terra[totalPaises].nome = malloc(tamStringPadrao);
+        terra[totalPaises].cor  = malloc(tamStringPadrao);
+
+        printf("Digite o nome do país: ");
+        fgets(terra[totalPaises].nome, tamStringPadrao, stdin);
+        removeEnter(terra[totalPaises].nome);
+        printf("Digite a cor do país: ");
+        fgets(terra[totalPaises].cor, tamStringPadrao, stdin);
+        removeEnter(terra[totalPaises].cor);
+        printf("Digite o número de soldados: ");
+        scanf("%d", &terra[totalPaises].soldados);
+        limpar();
+
+        printf("País cadastrado!\n");
+        totalPaises++;
+    }
+}
+
+void visualizar() {
+    if (totalPaises <= 0) {
+        printf("\n-----------------------\n");
+        printf("Nenhum país cadastrado!");
+        printf("\n-----------------------\n");
+    } else {
+        printf("\n---- PAÍSES ----\n");
+        for (int i = 0; i < totalPaises; i++) {
+            printf("--- País %d ---\n", i + 1);
+            printf("Nome: %s\n", terra[i].nome);
+            printf("Cor: %s\n", terra[i].cor);
+            printf("Soldados: %d\n", terra[i].soldados);
+            printf("-------------------------\n");
+        }
+    }
+}
+
+void atacar(){
+    int atacante;
+    int defensor;
+    if (totalPaises <= 0) {
+        printf("\n-----------------------\n");
+        printf("Nenhum país cadastrado!");
+        printf("\n-----------------------\n");
+    } else {
+        printf("\nTodos os paises(RELEMBRAR):");
+        for  (int i = 0; i < totalPaises; i++) {
+            printf("\n%d - %s", i + 1, terra[i].nome);
+        }
+        //Escolhe quem ataca e quem defende
+        printf("\n Digite o numero do pais quem ira atacar: ");
+        scanf("%d", &atacante);
+        limpar();
+        printf("\n Digite quem ira defender: ");
+        scanf("%d", &defensor);
+        limpar();
+
+        printf("DEBUG: [%s]\n", terra[atacante].nome);
+
+        // ajustar índice do array
+        atacante -= 1;
+        defensor -= 1;
+
+        // sorteando um numero aleatorio ate a quantia de soldados que cada pais possui
+        printf("\n--- STATUS ATAQUE ---\n");
+        int ataque = rand() % (terra[atacante].soldados + 1);
+        printf("\n%s esta atacando com %d soldados", terra[atacante].nome, ataque);
+        int defesa = rand() % (terra[defensor].soldados + 1);
+        printf("\n%s esta defendendo com %d soldados \n", terra[defensor].nome, defesa);
+
+        int diferenca = (ataque > defesa) ? (ataque - defesa) : (defesa - ataque);
+
+        if(ataque >= defesa) {
+            if (diferenca < defesa) {
+                terra[defensor].soldados -= diferenca;
+            } else {
+                terra[defensor].nome = terra[atacante].nome;
+                terra[defensor].cor = terra[atacante].cor;
+                terra[defensor].soldados = (ataque - diferenca) / 2;
+            }
+        } else {
+            terra[atacante].soldados -= diferenca;
+            printf("\n%s Defendou com sucesso de %s", terra[defensor].nome, terra[atacante].nome);
+        }
+        visualizar();
+    }
+}
 
 void sistema(int opcaoSistema) {
 
     switch (opcaoSistema) {
-
+        //Cadastro
         case 1:
-            if (totalPaises >= 10) {
-                printf("Limite de países atingido!\n");
-                break;
-            }
-
-            //pergunta quantos quer cadastrar
-
-            // if para verificar se vai passar do limite
-            //que é o cadastrados + seraocadastrados tem que ser menor do que limite
-
-            //caso for menor vai para o for 
-
-            //caso for maior, ira passar o limite e break
-
-            printf("\n-----------------------\n");
-            printf("ADICIONANDO UM PAIS\n");
-
-            printf("Digite o nome do país: ");
-            fgets(terra[totalPaises].nome, tamStringPadrao, stdin);
-
-            printf("Digite a cor do país: ");
-            fgets(terra[totalPaises].cor, tamStringPadrao, stdin);
-
-            printf("Digite o número de soldados: ");
-            scanf("%d", &terra[totalPaises].soldados);
-            limpar();
-
-            printf("País cadastrado!\n");
-            totalPaises++;
+            cadastrar();
             break;
 
+        //Visualizar mapas
         case 2:
-            if (totalPaises == 0) {
-                printf("\n-----------------------\n");
-                printf("Nenhum país cadastrado!");
-                printf("\n-----------------------\n");
-                break;
-            }
-
-            printf("\n---- PAÍSES ---\n");
-            for (int i = 0; i < totalPaises; i++) {
-                printf("País %d:\n", i + 1);
-                printf("Nome: %s", terra[i].nome);
-                printf("Cor: %s", terra[i].cor);
-                printf("Soldados: %d\n", terra[i].soldados);
-                printf("-------------------------\n");
-            }
+            visualizar();
             break;
 
+        case 3:
+            atacar();
+            break;
 
         default:
-            printf("Opção inválida.\n");
             printf("Fechando programa!!");
             break;
     }
@@ -87,19 +156,21 @@ void sistema(int opcaoSistema) {
 // --- Função Principal (main) ---
 // Função principal que orquestra o fluxo do jogo, chamando as outras funções em ordem.
 int main() {
+    terra = (struct paises*) calloc(100, sizeof(struct paises));
     do {
         printf("\n=== MENU ===\n");
         printf("Programa Rodando!\n");
         printf("1 para cadastrar:\n");
         printf("2 para visualizar:\n");
-        printf("3 para enserar programa:\n");
+        printf("3 para fazer um ataque:\n");
+        printf("4 para fechar o programa:\n");
 
         printf("\nEscolha:");
         scanf("%d", &opcaoSistema);
         limpar();
 
         sistema(opcaoSistema);
-    } while (opcaoSistema != 3);
+    } while (opcaoSistema != 4);
 
     return 0;
 }
